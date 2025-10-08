@@ -1,0 +1,13 @@
+<script type="module">
+  import initWasm from "../build/uci2pgn.js";
+  initWasm().then((wasm) => {
+    const moves = new wasm.VectorString();
+    moves.push_back("e2e4");
+    moves.push_back("e7e5");
+    moves.push_back("g1f3");
+    moves.push_back("b8c6");
+
+    console.log(wasm.convertUciToPgn(moves));
+    moves.delete();
+  });
+</script>
