@@ -35,7 +35,6 @@ std::string convert_uci_to_pgn(std::vector<std::string> uci_moves)
     return pgn;
 }
 
-// 📌 Rejestracja std::vector<std::string> dla WebAssembly
 EMSCRIPTEN_BINDINGS(chess_module)
 {
     emscripten::register_vector<std::string>("VectorString");
