@@ -9,7 +9,8 @@ EXAMPLE_DIR := example
 
 TARGETS     := $(BUILD_DIR)/chess_processor.js \
                $(BUILD_DIR)/uci2pgn.js \
-               $(BUILD_DIR)/game_stats.js
+               $(BUILD_DIR)/game_stats.js \
+               $(BUILD_DIR)/stats.js
 
 WASM_FILES  := $(TARGETS:.js=.wasm)
 
@@ -27,6 +28,10 @@ $(BUILD_DIR)/uci2pgn.js: $(SRC_DIR)/js-chess-uci2san/main.cpp | $(BUILD_DIR)
 	$(EMCC) $(STD) $(INCLUDES) $(EMFLAGS) $< -o $@
 
 $(BUILD_DIR)/game_stats.js: $(SRC_DIR)/game_stats/main.cpp | $(BUILD_DIR)
+	@echo "Compiling $< → $@"
+	$(EMCC) $(STD) $(INCLUDES) $(EMFLAGS) $< -o $@
+
+$(BUILD_DIR)/stats.js: $(SRC_DIR)/stats/main.cpp | $(BUILD_DIR)
 	@echo "Compiling $< → $@"
 	$(EMCC) $(STD) $(INCLUDES) $(EMFLAGS) $< -o $@
 

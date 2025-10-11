@@ -7,6 +7,7 @@
 #include <emscripten/bind.h>
 #include "../types/ShortMove.hpp"
 #include "../types/GameData.hpp"
+#include "../js/wrap.hpp"
 
 namespace std
 {
@@ -43,30 +44,6 @@ inline uint8_t pieceValue(PieceType pt)
     default:
         return 0;
     }
-}
-
-template <typename T>
-val unordered_map_to_js(const unordered_map<string, T> &map)
-{
-    static_assert(std::is_arithmetic<T>::value, "T must be a numeric type");
-    val jsMap = val::object();
-    for (const auto &pair : map)
-    {
-        jsMap.set(pair.first, pair.second);
-    }
-    return jsMap;
-}
-
-template <typename T>
-val vector_to_js(const vector<T> &vec)
-{
-    static_assert(std::is_arithmetic<T>::value, "T must be a numeric type");
-    val jsArray = val::array();
-    for (const auto &v : vec)
-    {
-        jsArray.call<void>("push", v);
-    }
-    return jsArray;
 }
 
 template <typename T>
