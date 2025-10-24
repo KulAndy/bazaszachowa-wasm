@@ -1,7 +1,12 @@
 EMCC        := em++
 STD         := -std=c++17
 INCLUDES    := -I chess-library/include
-EMFLAGS     := --bind -s MODULARIZE=1 -s EXPORT_ES6=1 -s ENVIRONMENT=web -s ALLOW_MEMORY_GROWTH=1
+EMFLAGS     := --bind \
+               -s MODULARIZE=1 \
+               -O3 \
+               -s EXPORT_ES6=1 \
+               -s ENVIRONMENT=web \
+               -s ALLOW_MEMORY_GROWTH=1
 
 SRC_DIR     := src
 BUILD_DIR   := build
