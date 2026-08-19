@@ -2,11 +2,9 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#include "../types/FenData.hpp"
+#include "../js/wrap.hpp"
 #include "../types/GameData.hpp"
-#include "../types/MoveData.hpp"
 #include "../types/ShortMove.hpp"
-#include "../types/Stats.hpp"
 #include "../types/TransparentStringHash.hpp"
 
 #endif
