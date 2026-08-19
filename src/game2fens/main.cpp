@@ -1,7 +1,9 @@
 #include <algorithm>
 #include <emscripten/bind.h>
 #include <optional>
+#include <ranges>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <vector>
 
@@ -23,54 +25,74 @@ string cutStringToPenultimateSpace(const string &inputString) {
     return inputString;
   return inputString.substr(0, lastSpaceIndex);
 }
+using StringFenMap =
+    unordered_map<string, FenData, TransparentStringHash, equal_to<>>;
 
-unordered_map<string, FenData> getFENsFirstBatch(const GameData &row) {
-  unordered_map<string, FenData> fensMap;
-  float points = (row.result == "1-0")   ? 1.0f
-                 : (row.result == "0-1") ? 0.0f
-                                         : 0.5f;
+StringFenMap getFENsFirstBatch(const GameData &row) {
+  StringFenMap fensMap;
+
+  float points;
+  if (row.result == "1-0") {
+    points = 1.0f;
+  } else if (row.result == "0-1") {
+    points = 0.0f;
+  } else {
+    points = 0.5f;
+  }
+
   Board board;
   size_t length = min(static_cast<size_t>(firstBatchLimit), row.moves.size());
+
   for (size_t i = 0; i < length; ++i) {
     const ShortMove &move = row.moves[i];
-    float sidePoints = (i % 2 == 0) ? points : 1.0 - points;
+    float sidePoints = (i % 2 == 0) ? points : 1.0f - points;
+
     string fen = cutStringToPenultimateSpace(board.getFen());
+
     string uci = move.from + move.to;
     if (move.promotion) {
       uci += move.promotion.value();
     }
+
     Move moveObj = uci::uciToMove(board, uci);
     string san = uci::moveToSan(board, moveObj);
+
     board.makeMove(moveObj);
+
     FenData &fenData = fensMap[fen];
     MoveData &moveData = fenData.moves[san];
+
     moveData.games += 1;
     moveData.points += sidePoints;
     moveData.years.push_back(row.year);
+
     Stats &yearStats = moveData.stats[row.year];
     yearStats.count += 1;
     yearStats.points += sidePoints;
-    if (find(fenData.indexes.begin(), fenData.indexes.end(), row.id) ==
-        fenData.indexes.end()) {
+
+    if (std::ranges::find(fenData.indexes, row.id) == fenData.indexes.end()) {
       fenData.indexes.push_back(row.id);
     }
   }
+
   return fensMap;
 }
 
-val convertFenMapToJS(const unordered_map<string, FenData> &fenMap) {
+val convertFenMapToJS(const StringFenMap &fenMap) {
   val result = val::object();
-  for (const auto &pair : fenMap) {
+
+  for (const auto &[fen, data] : fenMap) {
     val fenData = val::object();
-    fenData.set("moves", pair.second.getMovesJS());
-    fenData.set("indexes", pair.second.getIndexesJS());
-    result.set(pair.first, fenData);
+    fenData.set("moves", data.getMovesJS());
+    fenData.set("indexes", data.getIndexesJS());
+    result.set(fen, fenData);
   }
+
   return result;
 }
 
 val getFENsFirstBatchJS(const GameData &row) {
-  unordered_map<string, FenData> fenMap = getFENsFirstBatch(row);
+  StringFenMap fenMap = getFENsFirstBatch(row);
   return convertFenMapToJS(fenMap);
 }
 
