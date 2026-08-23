@@ -13,8 +13,8 @@ set(SRC_DIR
     ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-function(add_wasm_target TARGET SOURCE)
-    add_executable(${TARGET} ${SOURCE})
+function(add_wasm_target TARGET)
+    add_executable(${TARGET} ${ARGN})
 
     target_include_directories(${TARGET}
         PRIVATE
@@ -24,6 +24,13 @@ function(add_wasm_target TARGET SOURCE)
     target_compile_options(${TARGET}
         PRIVATE
         -O3
+        -flto
+    )
+
+    target_link_options(${TARGET}
+    PRIVATE
+    -O3
+    -flto
     )
 
     set_target_properties(${TARGET} PROPERTIES
@@ -47,6 +54,12 @@ add_wasm_target(
 add_wasm_target(
     game_stats
     ${SRC_DIR}/game_stats/main.cpp
+    ${SRC_DIR}/game_stats/heatmap.cpp
+    ${SRC_DIR}/game_stats/mobility.cpp
+    ${SRC_DIR}/game_stats/attacked_pieces.cpp
+    ${SRC_DIR}/game_stats/material.cpp
+    ${SRC_DIR}/game_stats/center_control.cpp
+    ${SRC_DIR}/game_stats/pawn_structure.cpp
 )
 
 add_wasm_target(
