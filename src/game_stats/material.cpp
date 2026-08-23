@@ -3,6 +3,23 @@
 
 using namespace chess;
 
+inline uint8_t pieceValue(PieceType pt) {
+  switch (pt) {
+  case PAWN:
+    return 1;
+  case KNIGHT:
+    return 3;
+  case BISHOP:
+    return 3;
+  case ROOK:
+    return 5;
+  case QUEEN:
+    return 9;
+  default:
+    return 0;
+  }
+}
+
 std::vector<int8_t> computeGameMaterialBalances(const GameData &game,
                                                 Color colorFilter) {
   std::vector<int8_t> materialBalances;
@@ -19,7 +36,7 @@ std::vector<int8_t> computeGameMaterialBalances(const GameData &game,
           if (piece == Piece::NONE)
             continue;
 
-          const int8_t value = -static_cast<int8_t>(piece.type());
+          const int8_t value = pieceValue(piece.type());
 
           if (piece.color() == Color::WHITE)
             white += value;
